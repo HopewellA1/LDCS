@@ -1,0 +1,290 @@
+{% extends "default/base.html" %}
+{% block content %}
+    {% load static %}
+
+
+
+
+    
+    <!-- =========================
+        HERO
+    ========================= -->
+
+    <section class="hero">
+
+        <div>
+
+            <span class="hero-tag">
+                LEARNING DISABILITY SCREENING SYSTEM
+            </span>
+
+            <h1>
+                Earlier identification.
+                <span>Better support.</span>
+            </h1>
+
+            <p>
+                A screening and referral system designed to identify
+                possible indicators of learning difficulties and help
+                connect students with appropriate professional support.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="/screening/" class="primary-btn">
+                    Start Screening
+                </a>
+
+                <a href="#how-it-works" class="secondary-btn">
+                    How It Works
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Dashboard illustration -->
+
+        <div class="hero-card">
+
+            <div class="screen-card">
+
+                <div class="screen-header">
+
+                    <strong>Screening Overview</strong>
+
+                    <span class="status">
+                        Screening
+                    </span>
+
+                </div>
+
+                <p>Risk & confidence assessment</p>
+
+                <div class="risk">
+
+                    <div class="score">64%</div>
+
+                    <div class="risk-bar">
+                        <div class="risk-progress"></div>
+                    </div>
+
+                </div>
+
+                <p>
+                    Potential indicators identified.
+                    Professional assessment recommended.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+        CONDITIONS
+    ========================= -->
+
+    <section class="conditions" id="about">
+
+        <div class="section-title">
+
+            <h2>What can the system screen for?</h2>
+
+            <p>
+                The proposed system considers multiple learning
+                difficulties rather than screening for a single
+                condition in isolation.
+            </p>
+
+        </div>
+
+
+        <div class="condition-grid">
+
+            <div class="condition-card">
+
+                <span class="condition-number">01</span>
+
+                <h3>Dyslexia</h3>
+
+                <p>
+                    Screening indicators related to reading accuracy,
+                    word recognition, spelling and phonological processing.
+                </p>
+
+            </div>
+
+
+            <div class="condition-card">
+
+                <span class="condition-number">02</span>
+
+                <h3>Dysgraphia</h3>
+
+                <p>
+                    Screening indicators associated with writing and
+                    handwriting-related difficulties.
+                </p>
+
+            </div>
+
+
+            <div class="condition-card">
+
+                <span class="condition-number">03</span>
+
+                <h3>Dyscalculia</h3>
+
+                <p>
+                    Screening indicators related to number concepts,
+                    arithmetic and mathematical relationships.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+        HOW IT WORKS
+    ========================= -->
+
+    <section class="how-it-works" id="how-it-works">
+
+        <div class="section-title">
+
+            <h2>How the system works</h2>
+
+            <p>
+                The system provides an early screening layer that
+                supports referral to qualified professionals.
+            </p>
+
+        </div>
+
+
+        <div class="steps">
+
+            <div class="step">
+
+                <div class="step-number">1</div>
+
+                <h3>Consent</h3>
+
+                <p>
+                    The student provides informed consent before
+                    data is collected.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">2</div>
+
+                <h3>Screen</h3>
+
+                <p>
+                    Handwriting, speech, cognitive and behavioural
+                    information may be collected.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">3</div>
+
+                <h3>Analyse</h3>
+
+                <p>
+                    Machine learning models analyse patterns
+                    within the collected information.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">4</div>
+
+                <h3>Risk Score</h3>
+
+                <p>
+                    The system produces a screening flag and
+                    confidence score.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">5</div>
+
+                <h3>Refer</h3>
+
+                <p>
+                    Students identified as at-risk can be referred
+                    to the Disability Unit.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+        IMPORTANT NOTICE
+    ========================= -->
+
+    <section class="disclaimer">
+
+        <div class="disclaimer-box">
+
+            <h3>Screening is not diagnosis</h3>
+
+            <p>
+                This system is designed to support early identification
+                and referral. Screening results do not replace assessment
+                or diagnosis by qualified professionals.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+        CALL TO ACTION
+    ========================= -->
+
+    <section class="cta">
+
+        <h2>Ready to begin?</h2>
+
+        <p>
+            Start the screening process and take the first step
+            towards understanding potential learning difficulties.
+        </p>
+
+        <a href="/screening/" class="primary-btn">
+            Start Screening
+        </a>
+
+    </section>
+
+
+
+{% endblock %}
