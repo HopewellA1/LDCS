@@ -1,0 +1,20 @@
+<div class="form-group{% if field.errors %} has-error{% endif %}">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+    {% if field.field.widget.input_type == "password" %}
+        <div class="password-wrap">
+            {{ field }}
+            <button type="button" class="password-toggle" aria-label="Show password" data-target="{{ field.id_for_label }}">Show</button>
+        </div>
+    {% else %}
+        {{ field }}
+    {% endif %}
+
+    {% for error in field.errors %}
+        <p class="field-error">{{ error }}</p>
+    {% endfor %}
+
+    {% if field.help_text %}
+        <div class="help-text">{{ field.help_text|safe }}</div>
+    {% endif %}
+</div>

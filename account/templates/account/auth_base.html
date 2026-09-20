@@ -1,0 +1,21 @@
+{% extends "default/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+    <link href="{% static 'account/css/auth.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<main class="auth-page">
+    <div class="auth-card">
+        <h1 class="auth-title">{% block auth_title %}{% endblock %}</h1>
+        <p class="auth-subtitle">{% block auth_subtitle %}{% endblock %}</p>
+
+        {% block auth_body %}{% endblock %}
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'account/js/auth.js' %}"></script>
+{% endblock %}

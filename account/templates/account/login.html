@@ -1,0 +1,23 @@
+{% extends "account/auth_base.html" %}
+
+{% block auth_title %}Log in{% endblock %}
+{% block auth_subtitle %}Welcome back. Enter your details to continue.{% endblock %}
+
+{% block auth_body %}
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% include "account/_non_field_errors.html" %}
+
+        {% include "account/_field.html" with field=form.username %}
+        {% include "account/_field.html" with field=form.password %}
+
+        <div class="form-row">
+            <a href="{% url 'password_reset' %}">Forgot password?</a>
+        </div>
+
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        <button type="submit" class="auth-submit">Log in</button>
+    </form>
+
+    <p class="auth-alt">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+{% endblock %}

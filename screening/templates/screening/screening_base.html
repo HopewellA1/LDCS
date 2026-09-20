@@ -1,0 +1,12 @@
+{% extends "default/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+    <link href="{% static 'screening/css/screening.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<main class="page">
+    {% block page_body %}{% endblock %}
+</main>
+{% endblock %}

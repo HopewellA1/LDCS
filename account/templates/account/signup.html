@@ -1,9 +1,20 @@
-{% extends "default/base.html" %}
-{% block content %}
+{% extends "account/auth_base.html" %}
 
+{% block auth_title %}Create your account{% endblock %}
+{% block auth_subtitle %}It only takes a minute.{% endblock %}
 
-    <h1>
-        Sign Up
-    </h1>
+{% block auth_body %}
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% include "account/_non_field_errors.html" %}
 
+        {% include "account/_field.html" with field=form.username %}
+        {% include "account/_field.html" with field=form.email %}
+        {% include "account/_field.html" with field=form.password1 %}
+        {% include "account/_field.html" with field=form.password2 %}
+
+        <button type="submit" class="auth-submit">Sign up</button>
+    </form>
+
+    <p class="auth-alt">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
 {% endblock %}

@@ -435,3 +435,56 @@
         padding-top: 0.5rem;
     }
 }
+
+/* AUTH: navbar button + flash messages */
+
+.nav-logout-form {
+    margin: 0;
+}
+
+button.login-btn {
+    border: 0;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.nav-links > div .login-btn + .login-btn {
+    margin-left: 8px;
+}
+
+.messages {
+    padding: 16px 7% 0;
+}
+
+.message {
+    padding: 12px 16px;
+    border-radius: 9px;
+    font-size: 14px;
+    background: #eaf1fb;
+    border: 1px solid #cfe0f5;
+    color: #1f4f8f;
+}
+
+.message-success {
+    background: #ecfdf3;
+    border-color: #abefc6;
+    color: #067647;
+}
+
+.message-error {
+    background: #fef3f2;
+    border-color: #fecdca;
+    color: #b42318;
+}
+
+@media (max-width: 900px) {
+    .nav-logout-form {
+        padding-top: 0.5rem;
+    }
+
+    .nav-logout-form .login-btn {
+        width: 100%;
+    }
+}

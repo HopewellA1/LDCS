@@ -1,0 +1,67 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<h1>Welcome, {{ user.get_username }}</h1>
+<p class="muted">This is your dashboard. Here you can manage your consent and start a screening.</p>
+
+<div class="card-grid">
+
+    <!-- Consent -->
+    <section class="card">
+        <div class="card-head">
+            <h2>Consent</h2>
+            {% if consent %}
+                <span class="badge badge-ok">Given</span>
+            {% else %}
+                <span class="badge badge-warn">Needed</span>
+            {% endif %}
+        </div>
+
+        {% if consent %}
+            <p>You gave consent on <strong>{{ consent.accepted_at|date:"j F Y, H:i" }}</strong> (version {{ consent.version }}).</p>
+            <form method="post" action="{% url 'withdraw_consent' %}"
+                  onsubmit="return confirm('Withdraw your consent? You will need to consent again before starting a screening.');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger-outline">Withdraw consent</button>
+            </form>
+        {% else %}
+            <p>Before any screening begins, you need to read and accept the informed-consent information.</p>
+            <a href="{% url 'consent' %}" class="btn btn-primary">Read and give consent</a>
+        {% endif %}
+    </section>
+
+    <!-- Screening -->
+    <section class="card">
+        <div class="card-head">
+            <h2>Screening</h2>
+        </div>
+        {% if consent %}
+            <p>You're ready to begin. The screening covers reading, writing and number skills.</p>
+            <a href="{% url 'screening_home' %}" class="btn btn-primary">Start screening</a>
+        {% else %}
+            <p>Available once you have given consent.</p>
+            <a href="{% url 'consent' %}" class="btn btn-light">Give consent first</a>
+        {% endif %}
+    </section>
+
+    <!-- Coming later -->
+    <section class="card card-muted">
+        <div class="card-head">
+            <h2>My results</h2>
+            <span class="badge">Coming soon</span>
+        </div>
+        <p>Your screening results will appear here.</p>
+    </section>
+
+    <section class="card card-muted">
+        <div class="card-head">
+            <h2>Referral</h2>
+            <span class="badge">Coming soon</span>
+        </div>
+        <p>If you choose to be referred to the Disability Unit, you'll be able to track it here.</p>
+    </section>
+
+</div>
+
+<p class="notice">Screening is not diagnosis. It supports early identification and referral to qualified professionals.</p>
+{% endblock %}

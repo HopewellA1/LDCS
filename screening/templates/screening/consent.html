@@ -1,0 +1,34 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<div class="card consent-card">
+    <h1>Informed consent</h1>
+    <p class="muted">Please read the information below before any screening begins. (Version {{ version }})</p>
+
+    <div class="consent-text">
+        {% include "screening/_consent_text.html" %}
+    </div>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+
+        {% for field in form %}
+            <div class="check-row{% if field.errors %} has-error{% endif %}">
+                <label>
+                    {{ field }}
+                    <span>{{ field.label }}</span>
+                </label>
+                {% for error in field.errors %}
+                    <p class="field-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="button-row">
+            <button type="submit" class="btn btn-primary">I consent</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-light">Not now</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
