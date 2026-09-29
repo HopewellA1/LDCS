@@ -1,67 +1,173 @@
-{% extends "screening/screening_base.html" %}
+{% load static %}<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · LDCS</title>
+<style>
+  @keyframes ldcsRise { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform:none; } }
+  body { margin:0; background:#fbfbfd; }
+  a { color:#0066cc; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  /* Hover states (the design's style-hover attributes converted to real CSS). */
+  .ld-start { transition:transform 0.2s ease; }
+  .ld-start:hover { transform:scale(1.04); text-decoration:none; }
+  .ld-view { transition:background 0.2s ease; }
+  .ld-view:hover { background:#264d8a; text-decoration:none; }
+  .ld-withdraw { transition:background 0.2s ease; }
+  .ld-withdraw:hover { background:rgba(215,0,21,0.05); }
+  .ld-logout:hover { background:rgba(0,102,204,0.06); }
+  .ld-btn-reset { background:none; border:none; cursor:pointer; font-family:inherit; }
+  .ld-msg { max-width:1040px; margin:14px auto 0; padding:12px 20px; border-radius:12px; font-size:14px; }
+  .ld-msg-success { background:rgba(52,199,89,0.12); color:#1a7f4b; }
+  .ld-msg-error { background:rgba(215,0,21,0.08); color:#b42318; }
+  .ld-msg-info { background:#eef3fb; color:#2f5fa8; }
+</style>
+</head>
+<body>
+<div style="min-height:100vh; background:#fbfbfd; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; color:#1d1d1f; -webkit-font-smoothing:antialiased;">
 
-{% block page_body %}
-<h1>Welcome, {{ user.get_username }}</h1>
-<p class="muted">This is your dashboard. Here you can manage your consent and start a screening.</p>
+  <!-- Sticky nav -->
+  <div style="position:sticky; top:0; z-index:20; backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); background:rgba(251,251,253,0.8); border-bottom:1px solid rgba(0,0,0,0.06);">
+    <div style="max-width:1040px; margin:0 auto; padding:0 22px; height:52px; display:flex; align-items:center; justify-content:space-between;">
+      <div style="display:flex; align-items:center; gap:11px;">
+        <div style="width:29px; height:29px; border-radius:8px; background:linear-gradient(160deg,#2f5fa8,#1e3a6b); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; letter-spacing:0.3px;">LD</div>
+        <span style="font-size:15px; font-weight:600; letter-spacing:-0.01em;">LDCS</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:30px;">
+        <nav style="display:flex; gap:30px; align-items:center;">
+          <a href="/" style="font-size:13px; color:#1d1d1f; opacity:0.85;">Home</a>
+          <a href="/#how-it-works" style="font-size:13px; color:#1d1d1f; opacity:0.85;">How it works</a>
+          <a href="{% url 'screening_home' %}" style="font-size:13px; color:#1d1d1f; opacity:0.85;">Screening</a>
+          <a href="/#resources" style="font-size:13px; color:#1d1d1f; opacity:0.85;">Resources</a>
+          <a href="{% url 'dashboard' %}" style="font-size:13px; color:#1d1d1f; font-weight:600;">Dashboard</a>
+        </nav>
+        <form method="post" action="{% url 'logout' %}" style="margin:0;">
+          {% csrf_token %}
+          <button type="submit" class="ld-logout ld-btn-reset" style="font-size:13px; color:#0066cc; padding:6px 15px; border-radius:980px; border:1px solid rgba(0,102,204,0.3);">Log out</button>
+        </form>
+      </div>
+    </div>
+  </div>
 
-<div class="card-grid">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="ld-msg ld-msg-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
 
-    <!-- Consent -->
-    <section class="card">
-        <div class="card-head">
-            <h2>Consent</h2>
-            {% if consent %}
-                <span class="badge badge-ok">Given</span>
+  <!-- Welcome hero -->
+  <div style="max-width:1040px; margin:0 auto; padding:72px 22px 24px 22px; text-align:center; animation:ldcsRise 0.7s ease both;">
+    <h1 style="font-size:52px; line-height:1.06; font-weight:700; letter-spacing:-0.025em; margin:0;">Welcome back, {{ user.get_username }}.</h1>
+    <p style="font-size:21px; line-height:1.4; font-weight:400; color:#6e6e73; max-width:600px; margin:18px auto 0 auto;">Manage your consent, run a screening, and review your results&nbsp;-&nbsp;all in one place.</p>
+  </div>
+
+  <div style="max-width:1040px; margin:0 auto; padding:24px 22px 8px 22px;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr)); gap:20px;">
+
+      <!-- Start screening hero card -->
+      <div style="grid-column:1 / -1; background:linear-gradient(150deg,#1e3a6b,#16294d); border-radius:24px; padding:40px 44px; color:#fff; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:24px; box-shadow:0 20px 50px -24px rgba(30,58,107,0.6); animation:ldcsRise 0.7s ease 0.05s both;">
+        <div>
+          {% if consent %}
+            <div style="display:inline-flex; align-items:center; gap:7px; background:rgba(255,255,255,0.14); padding:5px 12px; border-radius:980px; font-size:12px; font-weight:600; margin-bottom:16px;"><span style="width:7px; height:7px; border-radius:50%; background:#4ade80;"></span>Ready to begin</div>
+          {% else %}
+            <div style="display:inline-flex; align-items:center; gap:7px; background:rgba(255,255,255,0.14); padding:5px 12px; border-radius:980px; font-size:12px; font-weight:600; margin-bottom:16px;"><span style="width:7px; height:7px; border-radius:50%; background:#facc15;"></span>Consent needed first</div>
+          {% endif %}
+          <h2 style="font-size:30px; line-height:1.12; font-weight:700; letter-spacing:-0.02em; margin:0 0 10px 0;">Start your screening</h2>
+          <p style="font-size:16px; line-height:1.5; color:rgba(255,255,255,0.72); margin:0; max-width:440px;">Covers reading, writing and number skills. Takes about 15 minutes, and you can pause anytime.</p>
+        </div>
+        {% if consent %}
+          <a href="{% url 'screening_home' %}" class="ld-start" style="justify-self:end; white-space:nowrap; background:#fff; color:#1e3a6b; font-size:16px; font-weight:600; padding:15px 30px; border-radius:980px;">Start screening</a>
+        {% else %}
+          <a href="{% url 'consent' %}" class="ld-start" style="justify-self:end; white-space:nowrap; background:#fff; color:#1e3a6b; font-size:16px; font-weight:600; padding:15px 30px; border-radius:980px;">Give consent first</a>
+        {% endif %}
+      </div>
+
+      <!-- Consent card -->
+      <div style="background:#fff; border-radius:22px; padding:32px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -18px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.12s both;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+          <h3 style="font-size:22px; font-weight:600; letter-spacing:-0.015em; margin:0;">Consent</h3>
+          {% if consent %}
+            <span style="font-size:12px; font-weight:600; color:#1a7f4b; background:rgba(52,199,89,0.12); padding:5px 12px; border-radius:980px;">Given</span>
+          {% else %}
+            <span style="font-size:12px; font-weight:600; color:#a8560a; background:rgba(255,149,0,0.14); padding:5px 12px; border-radius:980px;">Needed</span>
+          {% endif %}
+        </div>
+        {% if consent %}
+          <p style="font-size:15px; line-height:1.55; color:#6e6e73; margin:0 0 26px 0;">You gave consent on <span style="color:#1d1d1f; font-weight:500;">{{ consent.accepted_at|date:"j F Y, H:i" }}</span> (version {{ consent.version }}).</p>
+          <form method="post" action="{% url 'withdraw_consent' %}" style="margin:0;" onsubmit="return confirm('Withdraw your consent? You will need to consent again before starting a screening.');">
+            {% csrf_token %}
+            <button type="submit" class="ld-withdraw ld-btn-reset" style="display:inline-block; font-size:15px; font-weight:500; color:#d70015; padding:11px 22px; border-radius:980px; border:1px solid rgba(215,0,21,0.28);">Withdraw consent</button>
+          </form>
+        {% else %}
+          <p style="font-size:15px; line-height:1.55; color:#6e6e73; margin:0 0 26px 0;">Before any screening begins, you need to read and accept the informed-consent information.</p>
+          <a href="{% url 'consent' %}" class="ld-view" style="display:inline-block; font-size:15px; font-weight:600; color:#fff; background:#2f5fa8; padding:12px 24px; border-radius:980px;">Read and give consent</a>
+        {% endif %}
+      </div>
+
+      <!-- My results card -->
+      <div style="background:#fff; border-radius:22px; padding:32px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -18px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.18s both;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+          <h3 style="font-size:22px; font-weight:600; letter-spacing:-0.015em; margin:0;">My results</h3>
+          {% if latest_session %}
+            {% if latest_session.flagged_count %}
+              <span style="font-size:12px; font-weight:600; color:#a8560a; background:rgba(255,149,0,0.14); padding:5px 12px; border-radius:980px;">{{ latest_session.flagged_count }} flagged</span>
             {% else %}
-                <span class="badge badge-warn">Needed</span>
+              <span style="font-size:12px; font-weight:600; color:#1a7f4b; background:rgba(52,199,89,0.12); padding:5px 12px; border-radius:980px;">All clear</span>
             {% endif %}
+          {% else %}
+            <span style="font-size:12px; font-weight:600; color:#6e6e73; background:rgba(0,0,0,0.05); padding:5px 12px; border-radius:980px;">Not yet</span>
+          {% endif %}
         </div>
-
-        {% if consent %}
-            <p>You gave consent on <strong>{{ consent.accepted_at|date:"j F Y, H:i" }}</strong> (version {{ consent.version }}).</p>
-            <form method="post" action="{% url 'withdraw_consent' %}"
-                  onsubmit="return confirm('Withdraw your consent? You will need to consent again before starting a screening.');">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger-outline">Withdraw consent</button>
-            </form>
+        {% if latest_session %}
+          <p style="font-size:15px; line-height:1.55; color:#6e6e73; margin:0 0 26px 0;">Last screened on <span style="color:#1d1d1f; font-weight:500;">{{ latest_session.completed_at|date:"j F Y" }}</span>.</p>
+          <a href="{% url 'results' %}" class="ld-view" style="display:inline-block; font-size:15px; font-weight:600; color:#fff; background:#2f5fa8; padding:12px 24px; border-radius:980px;">View my results</a>
         {% else %}
-            <p>Before any screening begins, you need to read and accept the informed-consent information.</p>
-            <a href="{% url 'consent' %}" class="btn btn-primary">Read and give consent</a>
+          <p style="font-size:15px; line-height:1.55; color:#6e6e73; margin:0;">Your screening results will appear here once you've completed a screening.</p>
         {% endif %}
-    </section>
+      </div>
 
-    <!-- Screening -->
-    <section class="card">
-        <div class="card-head">
-            <h2>Screening</h2>
-        </div>
-        {% if consent %}
-            <p>You're ready to begin. The screening covers reading, writing and number skills.</p>
-            <a href="{% url 'screening_home' %}" class="btn btn-primary">Start screening</a>
-        {% else %}
-            <p>Available once you have given consent.</p>
-            <a href="{% url 'consent' %}" class="btn btn-light">Give consent first</a>
-        {% endif %}
-    </section>
+    </div>
 
-    <!-- Coming later -->
-    <section class="card card-muted">
-        <div class="card-head">
-            <h2>My results</h2>
-            <span class="badge">Coming soon</span>
+    {% if practice_tests %}
+    <!-- Recommended practice (follow-up tests an officer assigned) -->
+    <div style="margin-top:20px; background:#fff; border-radius:22px; padding:32px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -18px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.24s both;">
+      <h3 style="font-size:22px; font-weight:600; letter-spacing:-0.015em; margin:0 0 6px 0;">Recommended practice</h3>
+      <p style="font-size:15px; color:#6e6e73; margin:0 0 22px 0;">Practice tests your Disability Unit officer set to help you improve where you were flagged. Score {{ threshold|default:60 }}% or more to clear that flag.</p>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        {% for t in practice_tests %}
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; border:1px solid rgba(0,0,0,0.06); border-radius:16px; padding:18px 22px;">
+          <div>
+            <div style="font-size:16px; font-weight:600;">{{ t.title }}</div>
+            <div style="font-size:13px; color:#6e6e73; margin-top:4px;">{{ t.domain_label }} &middot; {{ t.question_count }} question{{ t.question_count|pluralize }}{% if t.note %} &middot; {{ t.note }}{% endif %}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; flex:none;">
+            {% if t.passed %}
+              <span style="font-size:12px; font-weight:600; color:#1a7f4b; background:rgba(52,199,89,0.12); padding:6px 12px; border-radius:980px;">Passed &middot; {{ t.last_score }}%</span>
+              <a href="{% url 'followup_take' t.id %}" style="font-size:14px; font-weight:600; color:#2f5fa8; padding:9px 18px; border-radius:980px; border:1px solid rgba(47,95,168,0.28);">Retake</a>
+            {% else %}
+              {% if t.last_score is not None %}<span style="font-size:12px; font-weight:600; color:#a8560a; background:rgba(255,149,0,0.14); padding:6px 12px; border-radius:980px;">Last &middot; {{ t.last_score }}%</span>{% endif %}
+              <a href="{% url 'followup_take' t.id %}" class="ld-view" style="font-size:14px; font-weight:600; color:#fff; background:#2f5fa8; padding:10px 20px; border-radius:980px;">{% if t.last_score is not None %}Try again{% else %}Start practice{% endif %}</a>
+            {% endif %}
+          </div>
         </div>
-        <p>Your screening results will appear here.</p>
-    </section>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
 
-    <section class="card card-muted">
-        <div class="card-head">
-            <h2>Referral</h2>
-            <span class="badge">Coming soon</span>
-        </div>
-        <p>If you choose to be referred to the Disability Unit, you'll be able to track it here.</p>
-    </section>
+    <!-- Notice -->
+    <div style="margin-top:20px; background:#f0f4fa; border-radius:18px; padding:18px 24px; display:flex; align-items:center; gap:13px; animation:ldcsRise 0.7s ease 0.24s both;">
+      <div style="flex:none; width:22px; height:22px; border-radius:50%; background:#2f5fa8; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;">i</div>
+      <p style="font-size:14px; line-height:1.5; color:#3a4a63; margin:0;">Screening is not a diagnosis. It supports early identification and referral to qualified professionals.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="max-width:1040px; margin:56px auto 0 auto; padding:28px 22px; border-top:1px solid rgba(0,0,0,0.08); text-align:center;">
+    <p style="font-size:13px; color:#86868b; margin:0; line-height:1.6;">Learning Disability Detector &amp; Classifier System · Designed as a screening and referral support system.</p>
+  </div>
 
 </div>
-
-<p class="notice">Screening is not diagnosis. It supports early identification and referral to qualified professionals.</p>
-{% endblock %}
+</body>
+</html>

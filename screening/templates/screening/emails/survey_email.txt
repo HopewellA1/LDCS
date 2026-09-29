@@ -1,0 +1,33 @@
+Disability Rights Unit - Durban University of Technology
+Students with Disabilities Survey 2026
+
+Dear Student,
+
+The Disability Rights Unit (DRU) invites all Students with Disabilities (SWD)
+to participate in a survey aimed at understanding your experiences as a student
+with a disability within the university environment. The survey seeks to gather
+your views on areas such as:
+
+  - Accessibility of university learning environments
+  - Access to teaching and learning
+  - Reasonable accommodation and support services
+  - Social inclusion and participation in university activities
+  - Recommendations for improving disability inclusion and accessibility at DUT
+
+Your feedback is highly valued; confidentiality will be maintained, and the
+information collected will be used to better understand the experiences of
+Students with Disabilities and identify areas requiring improvement.
+
+To access your results and next steps, please log into your portal:
+{{ portal_url }}
+
+Your voice matters. Thank you for taking the time to participate and for
+contributing to the ongoing advancement of disability inclusion at DUT.
+
+Kind Regards,
+The Disability Rights Unit
+
+Durban University of Technology · 7 Ritson Road, Durban 4001 · Tel: 031 373 2000
+
+You received this email as a registered student at DUT. To stop receiving
+survey invitations, visit: {{ unsubscribe_url }}

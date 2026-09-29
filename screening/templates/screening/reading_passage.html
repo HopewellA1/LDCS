@@ -1,0 +1,15 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<div class="card">
+    <h1>Read the passage</h1>
+    <p class="passage">{{ passage }}</p>
+
+    <form method="post" action="{% url 'reading_finish' %}">
+        {% csrf_token %}
+        <div class="button-row">
+            <button type="submit" class="btn btn-primary">I've finished reading</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

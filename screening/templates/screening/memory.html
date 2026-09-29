@@ -1,0 +1,45 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<div class="card memory-card">
+    <div class="question-head">
+        <h1>Working memory</h1>
+        <span class="badge">Round {{ round_index|add:1 }} of {{ total }}</span>
+    </div>
+
+    <!-- Step 1: show the sequence. The script hides this after a few seconds. -->
+    <div id="show-step">
+        <p class="muted">Memorise this sequence. It disappears in a few seconds.</p>
+        <p class="digit-sequence">
+            {% for digit in sequence %}<span>{{ digit }}</span>{% endfor %}
+        </p>
+    </div>
+
+    <!-- Step 2: the answer form, hidden until the sequence disappears. -->
+    <form method="post" action="{% url 'memory_answer' %}" id="answer-step" class="hidden">
+        {% csrf_token %}
+        <p class="muted">Type the digits you saw, in order.</p>
+        <input type="text" name="answer" class="form-input" inputmode="numeric"
+               autocomplete="off" placeholder="e.g. 4 9 2">
+        <div class="button-row">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="{% url 'screening_home' %}" class="btn btn-light">Back to menu</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Show the sequence for a moment, then swap to the answer box. The number
+    // of digits decides how long it stays up (longer sequences get longer).
+    (function () {
+        var digits = {{ sequence|length }};
+        var showFor = 1500 + digits * 600;  // milliseconds
+        setTimeout(function () {
+            document.getElementById("show-step").classList.add("hidden");
+            var form = document.getElementById("answer-step");
+            form.classList.remove("hidden");
+            form.querySelector("input").focus();
+        }, showFor);
+    })();
+</script>
+{% endblock %}

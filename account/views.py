@@ -26,6 +26,13 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # The Profile is created automatically by a signal; here we
+            # record the optional student details the user typed.
+            profile = user.profile
+            profile.student_number = form.cleaned_data.get("student_number", "").strip()
+            profile.faculty = form.cleaned_data.get("faculty", "")
+            profile.year_of_study = form.cleaned_data.get("year_of_study", "")
+            profile.save()
             auth_login(request, user)
             messages.success(request, f"Welcome to LDCS, {user.get_username()}!")
             return redirect(settings.LOGIN_REDIRECT_URL)

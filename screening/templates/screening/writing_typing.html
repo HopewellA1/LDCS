@@ -1,0 +1,42 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<div class="card">
+    <h1>Copy-typing task</h1>
+    <p class="muted">Type the sentence below exactly as it appears. Try not to
+       copy and paste - this task looks at typing accuracy.</p>
+
+    <p class="typing-target">{{ sentence }}</p>
+
+    <form method="post" action="{% url 'writing_typing_submit' %}">
+        {% csrf_token %}
+        <!-- Filled in by the script below: how many times Backspace/Delete
+             was pressed while typing. -->
+        <input type="hidden" name="backspaces" id="backspaces" value="0">
+
+        <textarea name="typed" id="typed" class="form-input typing-input"
+                  rows="3" required autocomplete="off"
+                  placeholder="Type the sentence here..."></textarea>
+
+        <div class="button-row">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="{% url 'screening_home' %}" class="btn btn-light">Back to menu</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Count corrections (Backspace / Delete presses) as the student types.
+    (function () {
+        var typed = document.getElementById("typed");
+        var counter = document.getElementById("backspaces");
+        var count = 0;
+        typed.addEventListener("keydown", function (event) {
+            if (event.key === "Backspace" || event.key === "Delete") {
+                count += 1;
+                counter.value = count;
+            }
+        });
+    })();
+</script>
+{% endblock %}

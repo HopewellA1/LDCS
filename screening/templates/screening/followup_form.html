@@ -1,0 +1,119 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<p><a href="{% url 'followup_list' %}" class="muted">&larr; Back to follow-up tests</a></p>
+
+<h1>{% if mode == "edit" %}Edit follow-up test{% else %}New follow-up test{% endif %}</h1>
+<p class="muted">For <strong>{{ student.get_username }}</strong> - a short practice test targeting a domain they struggled with.</p>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+
+  <div class="card">
+    <h2>Test details</h2>
+    {{ form.non_field_errors }}
+    <div class="field">
+      <label for="{{ form.title.id_for_label }}">Title</label>
+      {{ form.title }}{{ form.title.errors }}
+    </div>
+    <div class="field">
+      <label for="{{ form.domain.id_for_label }}">Domain</label>
+      {{ form.domain }}{{ form.domain.errors }}
+    </div>
+    <div class="field">
+      <label for="{{ form.note.id_for_label }}">Note (optional)</label>
+      {{ form.note }}{{ form.note.errors }}
+    </div>
+    <label class="referral-toggle">
+      {{ form.is_active }}
+      <span>Active - the student can take this test</span>
+    </label>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Questions</h2></div>
+    <p class="muted">Add at least one question. Fill in two to four options and mark which one is correct.</p>
+    {{ formset.management_form }}
+    {{ formset.non_form_errors }}
+
+    <div id="qforms">
+      {% for f in formset %}
+      <div class="qform">
+        {{ f.id }}
+        {{ f.non_field_errors }}
+        <div class="field">
+          <label for="{{ f.prompt.id_for_label }}">Question</label>
+          {{ f.prompt }}{{ f.prompt.errors }}
+        </div>
+        <div class="opt-grid">
+          <div class="field"><label for="{{ f.option_a.id_for_label }}">Option A</label>{{ f.option_a }}{{ f.option_a.errors }}</div>
+          <div class="field"><label for="{{ f.option_b.id_for_label }}">Option B</label>{{ f.option_b }}{{ f.option_b.errors }}</div>
+          <div class="field"><label for="{{ f.option_c.id_for_label }}">Option C</label>{{ f.option_c }}{{ f.option_c.errors }}</div>
+          <div class="field"><label for="{{ f.option_d.id_for_label }}">Option D</label>{{ f.option_d }}{{ f.option_d.errors }}</div>
+        </div>
+        <div class="field">
+          <label for="{{ f.correct_index.id_for_label }}">Correct answer</label>
+          {{ f.correct_index }}{{ f.correct_index.errors }}
+        </div>
+        {% if f.instance.pk %}
+        <label class="referral-toggle">{{ f.DELETE }} <span>Delete this question</span></label>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <template id="empty-form">
+      <div class="qform">
+        <div class="field">
+          <label>Question</label>{{ formset.empty_form.prompt }}
+        </div>
+        <div class="opt-grid">
+          <div class="field"><label>Option A</label>{{ formset.empty_form.option_a }}</div>
+          <div class="field"><label>Option B</label>{{ formset.empty_form.option_b }}</div>
+          <div class="field"><label>Option C</label>{{ formset.empty_form.option_c }}</div>
+          <div class="field"><label>Option D</label>{{ formset.empty_form.option_d }}</div>
+        </div>
+        <div class="field">
+          <label>Correct answer</label>{{ formset.empty_form.correct_index }}
+        </div>
+      </div>
+    </template>
+
+    <div class="button-row">
+      <button type="button" class="btn btn-light" id="add-q">+ Add another question</button>
+    </div>
+  </div>
+
+  <div class="button-row">
+    <button type="submit" class="btn btn-primary">{% if mode == "edit" %}Save changes{% else %}Create test{% endif %}</button>
+    <a href="{% url 'followup_list' %}" class="btn btn-light">Cancel</a>
+  </div>
+</form>
+
+<style>
+  .field { margin: 0 0 14px 0; }
+  .field label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 6px 0; }
+  .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .qform { border-top: 1px solid rgba(0,0,0,0.08); padding: 18px 0; }
+  .qform:first-child { border-top: 0; padding-top: 0; }
+  @media (max-width: 560px) { .opt-grid { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  (function () {
+    var addBtn = document.getElementById('add-q');
+    var tpl = document.getElementById('empty-form');
+    var wrap = document.getElementById('qforms');
+    var total = document.querySelector('[name$="-TOTAL_FORMS"]');
+    if (!addBtn || !tpl || !wrap || !total) return;
+    addBtn.addEventListener('click', function () {
+      var index = parseInt(total.value, 10);
+      var html = tpl.innerHTML.replace(/__prefix__/g, index);
+      var holder = document.createElement('div');
+      holder.innerHTML = html.trim();
+      wrap.appendChild(holder.firstElementChild);
+      total.value = index + 1;
+    });
+  })();
+</script>
+{% endblock %}

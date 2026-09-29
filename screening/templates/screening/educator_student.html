@@ -1,0 +1,124 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<p><a href="{% url 'educator_dashboard' %}" class="muted">&larr; Back to dashboard</a></p>
+
+<h1>{{ student.get_username }}</h1>
+<p class="muted">
+    Student number: {{ student_number|default:"-" }}
+    &middot; Screened {{ session.completed_at|date:"j F Y, H:i" }}
+    &middot; {{ session.flagged_count }} domain(s) flagged
+</p>
+
+<!-- Referral control -->
+<div class="card referral-card">
+    <div class="card-head">
+        <h2>Referral to the Disability Unit</h2>
+        {% if referral.referred %}
+            <span class="badge badge-ok">Referred</span>
+        {% else %}
+            <span class="badge">Not referred</span>
+        {% endif %}
+    </div>
+
+    {% if referral and referral.updated_at %}
+    <p class="muted">
+        Last updated {{ referral.updated_at|date:"j F Y, H:i" }}
+        {% if referral.updated_by %}by {{ referral.updated_by.get_username }}{% endif %}.
+    </p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <label class="referral-toggle">
+            <input type="checkbox" name="referred"{% if referral.referred %} checked{% endif %}>
+            <span>Refer this student to the Disability Unit for a full assessment</span>
+        </label>
+
+        <label class="referral-note-label" for="note">Note (optional)</label>
+        <textarea name="note" id="note" class="form-input" rows="2"
+                  placeholder="e.g. Emailed 12 March, awaiting reply">{{ referral.note }}</textarea>
+
+        <div class="button-row">
+            <button type="submit" class="btn btn-primary">Save referral status</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <table class="roster">
+        <thead>
+            <tr>
+                <th>Domain</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Breakdown</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in results %}
+            <tr>
+                <td>{{ r.label }}</td>
+                <td>{{ r.score }}%</td>
+                <td>
+                    {% if r.flagged %}
+                        <span class="badge badge-warn">Flagged</span>
+                    {% else %}
+                        <span class="badge badge-ok">OK</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <ul class="detail-list compact">
+                        {% for item in r.detail %}
+                        <li><span>{{ item.label }}</span><strong>{{ item.value }}</strong></li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Follow-up practice tests -->
+<div class="card">
+    <div class="card-head">
+        <h2>Follow-up practice tests</h2>
+        <a href="{% url 'followup_create' student.id %}" class="btn btn-primary">+ Create follow-up test</a>
+    </div>
+    <p class="muted">Build a short practice test aimed at a domain this student struggled with.</p>
+
+    {% if weak_domains %}
+    <p class="muted">Quick start for a flagged domain:</p>
+    <div class="button-row">
+        {% for d in weak_domains %}
+        <a href="{% url 'followup_create' student.id %}?domain={{ d.key }}" class="btn btn-light">{{ d.label }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if follow_up_tests %}
+    <table class="roster">
+        <thead>
+            <tr><th>Title</th><th>Domain</th><th>Questions</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for t in follow_up_tests %}
+            <tr>
+                <td>{{ t.title }}</td>
+                <td>{{ t.domain_label }}</td>
+                <td>{{ t.question_count }}</td>
+                <td>{% if t.is_active %}<span class="badge badge-ok">Active</span>{% else %}<span class="badge">Inactive</span>{% endif %}</td>
+                <td><a href="{% url 'followup_edit' t.id %}" class="btn btn-light">Edit</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="muted">No follow-up tests for this student yet.</p>
+    {% endif %}
+</div>
+
+<p class="notice">A flag is a screening signal, not a diagnosis. Use it to
+   decide whether to invite the student for a full assessment.</p>
+{% endblock %}

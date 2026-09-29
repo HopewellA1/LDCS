@@ -1,0 +1,63 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<p><a href="{% url 'educator_dashboard' %}" class="muted">&larr; Back to dashboard</a></p>
+
+<h1>Follow-up practice tests</h1>
+<p class="muted">Targeted practice tests officers have created for students who struggled in a domain.</p>
+
+<div class="card">
+  {% if tests %}
+  <table class="roster">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Student</th>
+        <th>Domain</th>
+        <th>Questions</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tests %}
+      <tr>
+        <td>{{ t.title }}</td>
+        <td>{{ t.student.get_username }}</td>
+        <td>{{ t.domain_label }}</td>
+        <td>{{ t.question_count }}</td>
+        <td>
+          {% if t.is_active %}
+            <span class="badge badge-ok">Active</span>
+          {% else %}
+            <span class="badge">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="muted">{{ t.created_at|date:"j M Y" }}</td>
+        <td>
+          <div class="button-row">
+            <a href="{% url 'followup_edit' t.id %}" class="btn btn-light">Edit</a>
+            <form method="post" action="{% url 'followup_delete' t.id %}"
+                  onsubmit="return confirm('Delete this follow-up test? This cannot be undone.');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-light btn-danger">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No follow-up tests yet. Open a student from the dashboard and choose
+     <strong>Create follow-up test</strong> to build one.</p>
+  {% endif %}
+</div>
+
+<style>
+  .btn-danger { color: #b42318; border-color: rgba(180,35,24,0.28); }
+  .roster .button-row { justify-content: flex-end; gap: 8px; }
+  .roster form { display: inline; }
+</style>
+{% endblock %}

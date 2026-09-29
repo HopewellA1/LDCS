@@ -1,0 +1,29 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<div class="card question-card">
+    <div class="question-head">
+        <h1>{{ title }}</h1>
+        <span class="badge">Question {{ index|add:1 }} of {{ total }}</span>
+    </div>
+
+    <p class="question-text">{{ q.q }}</p>
+
+    <form method="post" action="{{ action }}">
+        {% csrf_token %}
+        <div class="options">
+            {% for option in q.options %}
+            <label class="option">
+                <input type="radio" name="option" value="{{ forloop.counter0 }}" required>
+                <span>{{ option }}</span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <div class="button-row">
+            <button type="submit" class="btn btn-primary">Next</button>
+            <a href="{% url 'screening_home' %}" class="btn btn-light">Back to menu</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -2,3 +2,10 @@ asgiref==3.12.1
 Django==6.1.1
 sqlparse==0.6.0
 tzdata==2026.3
+# Predicted-risk model on the Disability Unit dashboard (screening/ml.py).
+# The app runs without it - risk simply shows as "-" until the model is
+# trained with `python manage.py train_risk_model`.
+scikit-learn>=1.5
+# Pure-Python spelling check for the writing test (no Java needed). The app
+# runs without it too - it just reports zero language issues (see writing_check).
+pyspellchecker>=0.8

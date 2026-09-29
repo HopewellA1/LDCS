@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     "screening"
     ]
 
+# Use 64-bit primary keys for new models (Django's recommended default).
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -117,9 +120,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT= os.path.join(BASE_DIR,'media')
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -132,27 +135,37 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
+# How email is delivered depends on what is configured:
+#
+#   1. EMAIL_HOST set   -> real SMTP delivery (production, or to test a real
+#                          inbox such as Gmail - see the example below).
+#   2. Otherwise (dev)  -> messages are written as .eml files into the
+#                          sent_emails/ folder so you can open and read them.
+#                          Nothing leaves the machine.
+#
+# To actually receive the survey email in a real inbox (e.g. Gmail), set these
+# environment variables before starting the server:
+#   EMAIL_HOST=smtp.gmail.com
+#   EMAIL_PORT=587
+#   EMAIL_HOST_USER=you@gmail.com
+#   EMAIL_HOST_PASSWORD=<a Gmail App Password, not your normal password>
+#   DEFAULT_FROM_EMAIL="DRU Survey <you@gmail.com>"
+# (Set EMAIL_BACKEND_CONSOLE=1 instead to print emails in the runserver
+# terminal rather than saving them as files.)
 if os.environ.get("EMAIL_HOST"):
-    MAILERS = {
-        "default": {
-            "BACKEND": "django.core.mail.loginManager.smtp.EmailBackend",
-            "OPTIONS": {
-                "host": os.environ["EMAIL_HOST"],
-                "port": int(os.environ.get("EMAIL_PORT", "587")),
-                "username": os.environ.get("EMAIL_HOST_USER", ""),
-                "password": os.environ.get("EMAIL_HOST_PASSWORD", ""),
-                "use_tls": os.environ.get("EMAIL_USE_TLS", "True") == "True",
-            },
-        },
-    }
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.environ["EMAIL_HOST"]
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+    EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True") == "True"
+elif os.environ.get("EMAIL_BACKEND_CONSOLE"):
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
-    MAILERS = {
-        "default": {
-            "BACKEND": "django.core.mail.loginManager.console.EmailBackend",
-        },
-    }
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "LDCS <noreply@ldcs.local>")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "DRU Survey <noreply@dut.ac.za>")
 
 
 # Authentication

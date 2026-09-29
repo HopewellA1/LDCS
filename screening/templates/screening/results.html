@@ -1,0 +1,68 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<h1>Your screening results</h1>
+<p class="muted">
+    Completed on {{ session.completed_at|date:"j F Y, H:i" }}.
+    A domain is flagged when its score is below {{ threshold }}%.
+</p>
+
+{% if flagged %}
+<section class="card">
+    <h2>Areas that may need support</h2>
+    <p class="muted">These domains scored below {{ threshold }}%. Below each one
+       are some practice suggestions.</p>
+
+    {% for r in flagged %}
+    <div class="result-block flagged">
+        <div class="result-head">
+            <h3>{{ r.label }}</h3>
+            <span class="badge badge-warn">{{ r.score }}%</span>
+        </div>
+
+        <ul class="detail-list">
+            {% for item in r.detail %}
+            <li><span>{{ item.label }}</span><strong>{{ item.value }}</strong></li>
+            {% endfor %}
+        </ul>
+
+        {% if r.exercise %}
+        <p class="exercise-summary">{{ r.exercise.summary }}</p>
+        <ul class="drill-list">
+            {% for drill in r.exercise.drills %}
+            <li>{{ drill }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endfor %}
+</section>
+{% endif %}
+
+{% if strong %}
+<section class="card">
+    <h2>Areas of strength</h2>
+    <p class="muted">These domains scored {{ threshold }}% or above.</p>
+    {% for r in strong %}
+    <div class="result-block">
+        <div class="result-head">
+            <h3>{{ r.label }}</h3>
+            <span class="badge badge-ok">{{ r.score }}%</span>
+        </div>
+        <ul class="detail-list">
+            {% for item in r.detail %}
+            <li><span>{{ item.label }}</span><strong>{{ item.value }}</strong></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</section>
+{% endif %}
+
+<div class="button-row">
+    <a href="{% url 'dashboard' %}" class="btn btn-light">Back to dashboard</a>
+</div>
+
+<p class="notice">Screening is not diagnosis. If any area is flagged, consider
+   speaking to the Disability Unit for a full assessment.</p>
+{% endblock %}

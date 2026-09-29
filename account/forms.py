@@ -8,6 +8,8 @@ from django.contrib.auth.forms import (
     UserCreationForm,
 )
 
+from .models import Profile
+
 User = get_user_model()
 
 
@@ -43,6 +45,22 @@ class SignupForm(StyledFormMixin, UserCreationForm):
         label="Email address",
         widget=forms.EmailInput(attrs={"autocomplete": "email"}),
         help_text="Used to send you a link if you forget your password.",
+    )
+    student_number = forms.CharField(
+        label="Student number",
+        max_length=20,
+        required=False,
+        help_text="Optional. Your institution student number.",
+    )
+    faculty = forms.ChoiceField(
+        label="Faculty",
+        required=False,
+        choices=[("", "Prefer not to say")] + list(Profile.Faculty.choices),
+    )
+    year_of_study = forms.ChoiceField(
+        label="Year of study",
+        required=False,
+        choices=[("", "Prefer not to say")] + list(Profile.Year.choices),
     )
 
     class Meta(UserCreationForm.Meta):

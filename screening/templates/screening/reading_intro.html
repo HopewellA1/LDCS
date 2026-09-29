@@ -1,0 +1,20 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<div class="card">
+    <h1>Reading fluency</h1>
+    <p>You'll see a short passage. Read it at your normal pace, then press
+       <strong>"I've finished reading"</strong>. We time how long you take to
+       work out your reading speed, then ask a few questions about it.</p>
+    <p class="muted">Read carefully - you can't return to the passage once the
+       questions begin.</p>
+
+    <form method="post" action="{% url 'reading_start' %}">
+        {% csrf_token %}
+        <div class="button-row">
+            <button type="submit" class="btn btn-primary">Show the passage</button>
+            <a href="{% url 'screening_home' %}" class="btn btn-light">Back to menu</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

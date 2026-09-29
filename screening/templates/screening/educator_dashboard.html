@@ -1,0 +1,291 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disability Unit · LDCS</title>
+<style>
+  @keyframes ldcsRise { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform:none; } }
+  @keyframes ldcsRing { from { stroke-dashoffset: var(--circ); } }
+  @keyframes ldcsGrowV { from { transform: scaleY(0); } }
+  @keyframes ldcsGrowH { from { transform: scaleX(0); } }
+  body { margin:0; background:#fbfbfd; }
+  a { color:#0066cc; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  input, select { font-family:inherit; }
+  .ld-btn-reset { background:none; border:none; cursor:pointer; font-family:inherit; }
+  .ld-apply { transition:background 0.2s ease; }
+  .ld-apply:hover { background:#264d8a; }
+  .ld-view { transition:background 0.2s ease; }
+  .ld-view:hover { background:rgba(47,95,168,0.06); text-decoration:none; }
+  .ld-logout:hover { background:rgba(0,102,204,0.06); }
+  .ld-row { transition:background 0.15s ease; }
+  .ld-row:hover { background:#fafbfc; }
+  .ld-msg { max-width:1180px; margin:14px auto 0; padding:12px 20px; border-radius:12px; font-size:14px; }
+  .ld-msg-success { background:rgba(52,199,89,0.12); color:#1a7f4b; }
+  .ld-msg-error { background:rgba(215,0,21,0.08); color:#b42318; }
+  .ld-msg-info { background:#eef3fb; color:#2f5fa8; }
+</style>
+</head>
+<body>
+<div style="min-height:100vh; background:#fbfbfd; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; color:#1d1d1f; -webkit-font-smoothing:antialiased;">
+
+  <!-- Sticky nav -->
+  <div style="position:sticky; top:0; z-index:20; backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); background:rgba(251,251,253,0.8); border-bottom:1px solid rgba(0,0,0,0.06);">
+    <div style="max-width:1180px; margin:0 auto; padding:0 24px; height:52px; display:flex; align-items:center; justify-content:space-between;">
+      <div style="display:flex; align-items:center; gap:11px;">
+        <div style="width:29px; height:29px; border-radius:8px; background:linear-gradient(160deg,#2f5fa8,#1e3a6b); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; letter-spacing:0.3px;">LD</div>
+        <span style="font-size:15px; font-weight:600; letter-spacing:-0.01em;">LDCS</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:30px;">
+        <nav style="display:flex; gap:30px; align-items:center;">
+          <a href="/" style="font-size:13px; color:#1d1d1f; opacity:0.85;">Home</a>
+          <a href="/#how-it-works" style="font-size:13px; color:#1d1d1f; opacity:0.85;">How it works</a>
+          <a href="/#resources" style="font-size:13px; color:#1d1d1f; opacity:0.85;">Resources</a>
+          <a href="{% url 'educator_dashboard' %}" style="font-size:13px; color:#1d1d1f; font-weight:600;">Dashboard</a>
+        </nav>
+        <form method="post" action="{% url 'logout' %}" style="margin:0;">
+          {% csrf_token %}
+          <button type="submit" class="ld-logout ld-btn-reset" style="font-size:13px; color:#0066cc; padding:6px 15px; border-radius:980px; border:1px solid rgba(0,102,204,0.3);">Log out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="ld-msg ld-msg-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Header + date filter -->
+  <div style="max-width:1180px; margin:0 auto; padding:56px 24px 8px 24px; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:28px; align-items:end; animation:ldcsRise 0.7s ease both;">
+    <div>
+      <div style="font-size:14px; font-weight:600; color:#2f5fa8; letter-spacing:0.02em; margin-bottom:10px;">Disability Unit</div>
+      <h1 style="font-size:44px; line-height:1.08; font-weight:700; letter-spacing:-0.025em; margin:0;">Screening overview</h1>
+      <p style="font-size:19px; line-height:1.4; color:#6e6e73; margin:14px 0 0 0; max-width:560px;">Review students who have completed screening and manage referrals.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:12px;">
+      <a href="{% url 'followup_list' %}" style="background:#fff; color:#2f5fa8; border:1px solid rgba(47,95,168,0.3); font-size:14px; font-weight:600; padding:10px 20px; border-radius:980px; text-decoration:none;">+ Manage follow-up tests</a>
+      <form method="get" style="display:flex; align-items:flex-end; gap:12px; background:#fff; border:1px solid rgba(0,0,0,0.06); border-radius:16px; padding:14px 16px; box-shadow:0 6px 24px -16px rgba(0,0,0,0.25); margin:0;">
+        <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; color:#86868b; font-weight:500;">From<input type="date" name="from" value="{{ date_from }}" style="border:1px solid #d2d2d7; border-radius:9px; padding:8px 10px; font-size:14px; color:#1d1d1f; background:#fff;"></label>
+        <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; color:#86868b; font-weight:500;">To<input type="date" name="to" value="{{ date_to }}" style="border:1px solid #d2d2d7; border-radius:9px; padding:8px 10px; font-size:14px; color:#1d1d1f; background:#fff;"></label>
+        <input type="hidden" name="q" value="{{ query }}">
+        <input type="hidden" name="filter" value="{{ active_filter }}">
+        <input type="hidden" name="sort" value="{{ sort }}">
+        <button type="submit" class="ld-apply ld-btn-reset" style="background:#2f5fa8; color:#fff; font-size:14px; font-weight:600; padding:10px 20px; border-radius:980px;">Apply</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- KPI tiles -->
+  <div style="max-width:1180px; margin:0 auto; padding:28px 24px 0 24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); gap:18px;">
+    <div style="background:#fff; border-radius:20px; padding:26px 28px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -20px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.05s both;">
+      <div style="font-size:44px; font-weight:700; letter-spacing:-0.03em; line-height:1;">{{ kpis.screened }}</div>
+      <div style="font-size:15px; color:#6e6e73; margin-top:10px;">Students screened</div>
+    </div>
+    <div style="background:#fff; border-radius:20px; padding:26px 28px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -20px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.1s both;">
+      <div style="display:flex; align-items:baseline; gap:9px;"><span style="font-size:44px; font-weight:700; letter-spacing:-0.03em; line-height:1; color:#c77700;">{{ kpis.flagged }}</span><span style="font-size:12px; font-weight:600; color:#a8560a; background:rgba(255,149,0,0.14); padding:4px 10px; border-radius:980px;">flagged</span></div>
+      <div style="font-size:15px; color:#6e6e73; margin-top:10px;">With one or more flags</div>
+    </div>
+    <div style="background:#fff; border-radius:20px; padding:26px 28px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -20px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.15s both;">
+      <div style="display:flex; align-items:baseline; gap:9px;"><span style="font-size:44px; font-weight:700; letter-spacing:-0.03em; line-height:1; color:#c0362c;">{{ kpis.high_risk }}</span><span style="font-size:12px; font-weight:600; color:#c0362c; background:rgba(255,59,48,0.12); padding:4px 10px; border-radius:980px;">high risk</span></div>
+      <div style="font-size:15px; color:#6e6e73; margin-top:10px;">Predicted high risk (ML)</div>
+    </div>
+    <div style="background:#fff; border-radius:20px; padding:26px 28px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -20px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.2s both;">
+      <div style="font-size:44px; font-weight:700; letter-spacing:-0.03em; line-height:1;">{{ kpis.this_week }}</div>
+      <div style="font-size:15px; color:#6e6e73; margin-top:10px;">Screened this week</div>
+    </div>
+    <div style="background:linear-gradient(150deg,#eaf1fb,#dfeaf8); border-radius:20px; padding:26px 28px; border:1px solid rgba(47,95,168,0.14); box-shadow:0 8px 30px -20px rgba(47,95,168,0.3); animation:ldcsRise 0.7s ease 0.2s both;">
+      <div style="font-size:44px; font-weight:700; letter-spacing:-0.03em; line-height:1; color:#1e3a6b;">{{ kpis.awaiting }}</div>
+      <div style="font-size:15px; color:#3a4a63; margin-top:10px;">Awaiting referral decision</div>
+    </div>
+  </div>
+
+  <!-- Donuts + distribution -->
+  <div style="max-width:1180px; margin:0 auto; padding:18px 24px 0 24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); gap:18px;">
+
+    <div style="background:#fff; border-radius:22px; padding:28px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -20px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.24s both;">
+      <h3 style="font-size:18px; font-weight:600; letter-spacing:-0.01em; margin:0 0 20px 0;">Flagged vs clear</h3>
+      <div style="display:flex; justify-content:center; padding:6px 0 18px 0;">
+        <svg width="168" height="168" viewBox="0 0 168 168" style="--circ:439.8;">
+          <circle cx="84" cy="84" r="70" fill="none" stroke="#eef0f3" stroke-width="26"></circle>
+          <circle cx="84" cy="84" r="70" fill="none" stroke="#f5a623" stroke-width="26" stroke-linecap="round" stroke-dasharray="439.8" stroke-dashoffset="{{ donuts.flagged.offset }}" transform="rotate(-90 84 84)" style="animation:ldcsRing 1s ease both;"></circle>
+          <text x="84" y="78" text-anchor="middle" font-size="34" font-weight="700" fill="#1d1d1f" font-family="-apple-system,sans-serif">{{ donuts.flagged.count }}</text>
+          <text x="84" y="100" text-anchor="middle" font-size="13" fill="#86868b" font-family="-apple-system,sans-serif">flagged</text>
+        </svg>
+      </div>
+      <div style="display:flex; justify-content:center; gap:22px;">
+        <span style="display:flex; align-items:center; gap:7px; font-size:13px; color:#3a3a3c;"><span style="width:11px; height:11px; border-radius:3px; background:#f5a623;"></span>Flagged · {{ donuts.flagged.count }}</span>
+        <span style="display:flex; align-items:center; gap:7px; font-size:13px; color:#3a3a3c;"><span style="width:11px; height:11px; border-radius:3px; background:#34c759;"></span>Clear · {{ donuts.flagged.other }}</span>
+      </div>
+    </div>
+
+    <div style="background:#fff; border-radius:22px; padding:28px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -20px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.28s both;">
+      <h3 style="font-size:18px; font-weight:600; letter-spacing:-0.01em; margin:0 0 20px 0;">Referred vs not</h3>
+      <div style="display:flex; justify-content:center; padding:6px 0 18px 0;">
+        <svg width="168" height="168" viewBox="0 0 168 168" style="--circ:439.8;">
+          <circle cx="84" cy="84" r="70" fill="none" stroke="#eef0f3" stroke-width="26"></circle>
+          <circle cx="84" cy="84" r="70" fill="none" stroke="#2f5fa8" stroke-width="26" stroke-linecap="round" stroke-dasharray="439.8" stroke-dashoffset="{{ donuts.referred.offset }}" transform="rotate(-90 84 84)" style="animation:ldcsRing 1s ease both;"></circle>
+          <text x="84" y="78" text-anchor="middle" font-size="34" font-weight="700" fill="#1d1d1f" font-family="-apple-system,sans-serif">{{ donuts.referred.count }}</text>
+          <text x="84" y="100" text-anchor="middle" font-size="13" fill="#86868b" font-family="-apple-system,sans-serif">referred</text>
+        </svg>
+      </div>
+      <div style="display:flex; justify-content:center; gap:22px;">
+        <span style="display:flex; align-items:center; gap:7px; font-size:13px; color:#3a3a3c;"><span style="width:11px; height:11px; border-radius:3px; background:#2f5fa8;"></span>Referred · {{ donuts.referred.count }}</span>
+        <span style="display:flex; align-items:center; gap:7px; font-size:13px; color:#3a3a3c;"><span style="width:11px; height:11px; border-radius:3px; background:#cdd6e4;"></span>Not referred · {{ donuts.referred.other }}</span>
+      </div>
+    </div>
+
+    <div style="background:#fff; border-radius:22px; padding:28px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -20px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.32s both;">
+      <h3 style="font-size:18px; font-weight:600; letter-spacing:-0.01em; margin:0 0 20px 0;">Students by number of flags</h3>
+      <div style="display:flex; align-items:flex-end; gap:10px; height:174px; padding-bottom:4px; border-bottom:1px solid #ececef;">
+        {% for bar in distribution_bars %}
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%;">
+          {% if bar.value %}
+            <div style="width:60%; height:{{ bar.pct }}%; background:linear-gradient(180deg,#2f5fa8,#254c88); border-radius:6px 6px 0 0; transform-origin:bottom; animation:ldcsGrowV 0.9s ease both;"></div>
+          {% else %}
+            <div style="width:60%; height:2%; background:#e6eaf1; border-radius:6px 6px 0 0;"></div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      <div style="display:flex; gap:10px; margin-top:9px;">
+        {% for bar in distribution_bars %}
+        <div style="flex:1; text-align:center; font-size:12px; color:{% if bar.value %}#1d1d1f{% else %}#86868b{% endif %}; {% if bar.value %}font-weight:600;{% endif %}">{{ bar.label }}</div>
+        {% endfor %}
+      </div>
+      <div style="text-align:center; font-size:12px; color:#86868b; margin-top:8px;">Number of flags</div>
+    </div>
+
+  </div>
+
+  <!-- Domain + faculty bars -->
+  <div style="max-width:1180px; margin:0 auto; padding:18px 24px 0 24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:18px;">
+
+    <div style="background:#fff; border-radius:22px; padding:28px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -20px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.36s both;">
+      <h3 style="font-size:18px; font-weight:600; letter-spacing:-0.01em; margin:0 0 22px 0;">Flags by domain</h3>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        {% for bar in domain_bars %}
+        <div style="display:grid; grid-template-columns:130px minmax(0,1fr) 26px; align-items:center; gap:12px;">
+          <span style="font-size:13px; color:#6e6e73; text-align:right; line-height:1.3;">{{ bar.label }}</span>
+          <div style="height:24px; background:#f2f4f7; border-radius:7px; overflow:hidden;">
+            {% if bar.value %}<div style="height:100%; width:{{ bar.pct }}%; background:linear-gradient(90deg,#2f5fa8,#254c88); border-radius:7px; transform-origin:left; animation:ldcsGrowH 0.9s ease both;"></div>{% endif %}
+          </div>
+          <span style="font-size:13px; font-weight:600; color:{% if bar.value %}#1d1d1f{% else %}#b4b4bb{% endif %};">{{ bar.value }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="background:#fff; border-radius:22px; padding:28px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -20px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.4s both;">
+      <h3 style="font-size:18px; font-weight:600; letter-spacing:-0.01em; margin:0 0 22px 0;">Flagged students by faculty</h3>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        {% for bar in faculty_bars %}
+        <div style="display:grid; grid-template-columns:150px minmax(0,1fr) 26px; align-items:center; gap:12px;">
+          <span style="font-size:13px; color:#6e6e73; text-align:right; line-height:1.3;">{{ bar.label }}</span>
+          <div style="height:24px; background:#f2f4f7; border-radius:7px; overflow:hidden;">
+            {% if bar.value %}<div style="height:100%; width:{{ bar.pct }}%; background:linear-gradient(90deg,{% if bar.label == 'Not specified' %}#8aa2c8,#7893c0{% else %}#2f5fa8,#254c88{% endif %}); border-radius:7px; transform-origin:left; animation:ldcsGrowH 0.9s ease both;"></div>{% endif %}
+          </div>
+          <span style="font-size:13px; font-weight:600; color:{% if bar.value %}#1d1d1f{% else %}#b4b4bb{% endif %};">{{ bar.value }}</span>
+        </div>
+        {% empty %}
+        <p style="font-size:14px; color:#86868b; margin:0;">No flagged students yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Students table -->
+  <div style="max-width:1180px; margin:0 auto; padding:18px 24px 0 24px;">
+    <div style="background:#fff; border-radius:22px; padding:28px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 8px 30px -20px rgba(0,0,0,0.25); animation:ldcsRise 0.7s ease 0.44s both;">
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:20px;">
+        <h3 style="font-size:22px; font-weight:600; letter-spacing:-0.015em; margin:0;">Students</h3>
+        <form method="get" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:0;">
+          <input type="text" name="q" value="{{ query }}" placeholder="Search name or student number" style="border:1px solid #d2d2d7; border-radius:980px; padding:10px 18px; font-size:14px; width:240px; color:#1d1d1f;">
+          <select name="filter" style="border:1px solid #d2d2d7; border-radius:980px; padding:10px 16px; font-size:14px; background:#fff; color:#1d1d1f;">
+            <option value="all"{% if active_filter == "all" %} selected{% endif %}>All students</option>
+            <option value="flagged"{% if active_filter == "flagged" %} selected{% endif %}>Flagged only</option>
+            <option value="high_risk"{% if active_filter == "high_risk" %} selected{% endif %}>High risk only</option>
+            <option value="referred"{% if active_filter == "referred" %} selected{% endif %}>Referred only</option>
+            <option value="not_referred"{% if active_filter == "not_referred" %} selected{% endif %}>Not referred</option>
+          </select>
+          <select name="sort" style="border:1px solid #d2d2d7; border-radius:980px; padding:10px 16px; font-size:14px; background:#fff; color:#1d1d1f;">
+            <option value="flags"{% if sort == "flags" %} selected{% endif %}>Most flags</option>
+            <option value="recent"{% if sort == "recent" %} selected{% endif %}>Recent</option>
+          </select>
+          <input type="hidden" name="from" value="{{ date_from }}">
+          <input type="hidden" name="to" value="{{ date_to }}">
+          <button type="submit" class="ld-apply ld-btn-reset" style="background:#2f5fa8; color:#fff; font-size:14px; font-weight:600; padding:10px 20px; border-radius:980px;">Apply</button>
+        </form>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; min-width:720px;">
+          <thead>
+            <tr style="border-bottom:1px solid #ececef;">
+              <th style="text-align:left; font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#86868b; padding:0 16px 14px 0;">Student</th>
+              <th style="text-align:left; font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#86868b; padding:0 16px 14px 0;">Student number</th>
+              <th style="text-align:left; font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#86868b; padding:0 16px 14px 0;">Faculty</th>
+              <th style="text-align:left; font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#86868b; padding:0 16px 14px 0;">Flagged domains</th>
+              <th style="text-align:left; font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#86868b; padding:0 16px 14px 0;">Predicted risk</th>
+              <th style="text-align:left; font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#86868b; padding:0 16px 14px 0;">Referral</th>
+              <th style="text-align:left; font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#86868b; padding:0 16px 14px 0;">Completed</th>
+              <th style="padding:0 0 14px 0;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+            <tr class="ld-row"{% if not forloop.last %} style="border-bottom:1px solid #f2f2f4;"{% endif %}>
+              <td style="padding:18px 16px 18px 0; font-size:15px; font-weight:600; color:#1d1d1f;">{{ row.student.get_username }}</td>
+              <td style="padding:18px 16px 18px 0; font-size:15px; color:{% if row.student_number %}#6e6e73{% else %}#b4b4bb{% endif %};">{{ row.student_number|default:"-" }}</td>
+              <td style="padding:18px 16px 18px 0; font-size:15px; color:#6e6e73;">{{ row.faculty }}</td>
+              <td style="padding:18px 16px 18px 0;">
+                {% if row.flagged_count %}
+                  <span style="font-size:12px; font-weight:600; color:#a8560a; background:rgba(255,149,0,0.14); padding:5px 11px; border-radius:980px;">{{ row.flagged_count }} of {{ total_domains }}</span>
+                {% else %}
+                  <span style="font-size:12px; font-weight:600; color:#1a7f4b; background:rgba(52,199,89,0.12); padding:5px 11px; border-radius:980px;">None</span>
+                {% endif %}
+              </td>
+              <td style="padding:18px 16px 18px 0;">
+                {% if row.risk == "high" %}
+                  <span style="font-size:12px; font-weight:600; color:#c0362c; background:rgba(255,59,48,0.12); padding:5px 11px; border-radius:980px;">● High</span>
+                {% elif row.risk == "medium" %}
+                  <span style="font-size:12px; font-weight:600; color:#a8560a; background:rgba(255,149,0,0.14); padding:5px 11px; border-radius:980px;">● Medium</span>
+                {% elif row.risk == "low" %}
+                  <span style="font-size:12px; font-weight:600; color:#1a7f4b; background:rgba(52,199,89,0.12); padding:5px 11px; border-radius:980px;">● Low</span>
+                {% else %}
+                  <span style="font-size:13px; color:#b4b4bb;">-</span>
+                {% endif %}
+              </td>
+              <td style="padding:18px 16px 18px 0;">
+                {% if row.referred %}
+                  <span style="font-size:12px; font-weight:600; color:#1a7f4b; background:rgba(52,199,89,0.12); padding:5px 11px; border-radius:980px;">Referred</span>
+                {% else %}
+                  <span style="font-size:12px; font-weight:600; color:#6e6e73; background:rgba(0,0,0,0.05); padding:5px 11px; border-radius:980px;">Not referred</span>
+                {% endif %}
+              </td>
+              <td style="padding:18px 16px 18px 0; font-size:15px; color:#6e6e73;">{{ row.completed_at|date:"j M Y" }}</td>
+              <td style="padding:18px 0; text-align:right;"><a href="{% url 'educator_student' row.student.id %}" class="ld-view" style="font-size:14px; font-weight:600; color:#2f5fa8; padding:8px 18px; border-radius:980px; border:1px solid rgba(47,95,168,0.28);">View</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" style="padding:24px 0; font-size:15px; color:#86868b;">No students match. Try clearing the search, filter, or date range.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12px; color:#86868b; margin:18px 0 0 0; line-height:1.6;">
+        <strong style="color:#6e6e73;">Predicted risk</strong> is an experimental machine-learning estimate (Random Forest) trained on synthetic data. It is a triage aid, not a diagnosis, and does not replace the flag counts or a full assessment. It appears once the model has been trained.
+      </p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="max-width:1180px; margin:56px auto 0 auto; padding:28px 24px; border-top:1px solid rgba(0,0,0,0.08); text-align:center;">
+    <p style="font-size:13px; color:#86868b; margin:0; line-height:1.6;">Learning Disability Detector &amp; Classifier System · Designed as a screening and referral support system.</p>
+  </div>
+
+</div>
+</body>
+</html>

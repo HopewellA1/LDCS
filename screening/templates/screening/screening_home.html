@@ -1,0 +1,59 @@
+{% extends "screening/screening_base.html" %}
+
+{% block page_body %}
+<h1>Screening</h1>
+<p class="muted">
+    Work through each section below. Your answers are only saved when you
+    finish the whole screening. ({{ completed }} of {{ domains|length }} done)
+</p>
+
+<div class="domain-list">
+    {% for d in domains %}
+    <div class="domain-row{% if d.done %} is-done{% endif %}">
+        <div class="domain-info">
+            <h2>{{ d.label }}</h2>
+            <p class="muted">{{ d.indicator }}</p>
+        </div>
+
+        <div class="domain-action">
+            {% if d.done %}
+                <span class="badge {% if d.flagged %}badge-warn{% else %}badge-ok{% endif %}">Done · {{ d.score }}%</span>
+                {% if d.key == "reading" %}
+                    <a href="{% url 'reading_test' %}" class="btn btn-light">Retake</a>
+                {% elif d.key == "writing" %}
+                    <a href="{% url 'writing_test' %}" class="btn btn-light">Retake</a>
+                {% elif d.key == "memory" %}
+                    <a href="{% url 'memory_test' %}" class="btn btn-light">Retake</a>
+                {% else %}
+                    <a href="{% url 'test_mcq' d.key %}" class="btn btn-light">Retake</a>
+                {% endif %}
+            {% else %}
+                {% if d.key == "reading" %}
+                    <a href="{% url 'reading_test' %}" class="btn btn-primary">Start</a>
+                {% elif d.key == "writing" %}
+                    <a href="{% url 'writing_test' %}" class="btn btn-primary">Start</a>
+                {% elif d.key == "memory" %}
+                    <a href="{% url 'memory_test' %}" class="btn btn-primary">Start</a>
+                {% else %}
+                    <a href="{% url 'test_mcq' d.key %}" class="btn btn-primary">Start</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="finish-row">
+    {% if all_done %}
+        <form method="post" action="{% url 'screening_finish' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Finish &amp; see my results</button>
+        </form>
+    {% else %}
+        <p class="muted">Complete every section to see your results.</p>
+    {% endif %}
+    <a href="{% url 'dashboard' %}" class="btn btn-light">Back to dashboard</a>
+</div>
+
+<p class="notice">Screening is not diagnosis. It supports early identification and referral to qualified professionals.</p>
+{% endblock %}

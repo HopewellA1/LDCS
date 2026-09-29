@@ -16,3 +16,10 @@ logs/
 
 # Ignore virtual environment directory
 env/
+
+# Trained ML model (a build artefact - regenerate with
+# `python manage.py train_risk_model`, do not commit)
+screening/ml_model.pkl
+
+# Dev email backend output (.eml files written by the filebased backend)
+sent_emails/
